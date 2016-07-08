@@ -410,6 +410,17 @@ for trllop = 1:length(eyedatPyt)
 end
 
 %% align data streams using eyetracking data
+
+% cross-correlate entire eye signal (after downsampling NS2 signals)
+% to get a rough idea of where the lag is
+% sampling rate in Python log should be 240
+% use this to check: round(1/median(diff(eyetimePyt{1})))
+eyeXdownsamp = resample(double(NS2.Data(eyeXind,:)),240,1000);
+[Xs1, lag] = xcorr(eyeXdownsamp, eye(:,2));
+[~,Is1] = max(Xs1);
+eyedatLag = lag(Is1)*(1000/240); % lag in ms
+firstTrialLag = round(eyedatLag+(eyetimePyt{1}(1)*1000)); % approx. lag of first trial
+
 clear trial sampleinfo
 c = 1;
 UVt = cell(size(UV));
@@ -418,19 +429,20 @@ for img = 1:size(pairings,2)
         % eyedat{pairings(1,img)} contains eyedata for first viewing
         
         if pairings(1,img)==1
-            [Xs1, lag] = xcorr(double(NS2.Data(eyeXind,:)), eyedatInterp{pairings(1,img)}(1,:));
-            Xs2 = xcorr(double(NS2.Data(eyeXind,:)), eyedatInterp{pairings(1,img)}(1,300:end));
-            Xs3 = xcorr(double(NS2.Data(eyeYind,:)), eyedatInterp{pairings(1,img)}(2,:));
-            Xs4 = xcorr(double(NS2.Data(eyeYind,:)), eyedatInterp{pairings(1,img)}(2,300:end));
-            [~,Is1] = max(Xs1.*(Xs1-Xs2).*Xs3.*(Xs3-Xs4));
+            [Xs1, lag] = xcorr(double(NS2.Data(eyeXind,firstTrialLag-1000:firstTrialLag+1000+length(eyedatInterp{pairings(1,img)}(1,:)))), eyedatInterp{pairings(1,img)}(1,:));
+            %                 Xs2 = xcorr(double(NS2.Data(eyeXind,firstTrialLag-1000:firstTrialLag+1000+length(eyedatInterp{pairings(1,img)}(1,:)))), eyedatInterp{pairings(1,img)}(1,300:end));
+            Xs3 = xcorr(double(NS2.Data(eyeYind,firstTrialLag-1000:firstTrialLag+1000+length(eyedatInterp{pairings(1,img)}(1,:)))), eyedatInterp{pairings(1,img)}(2,:));
+            %                 Xs4 = xcorr(double(NS2.Data(eyeYind,firstTrialLag-1000:firstTrialLag+1000+length(eyedatInterp{pairings(1,img)}(1,:)))), eyedatInterp{pairings(1,img)}(2,300:end));
+            %                 [~,Is1] = max(Xs1.*(Xs1-Xs2).*Xs3.*(Xs3-Xs4));
+            [~,Is1] = max(Xs1.*Xs3);
             
             [~,locs] = findpeaks(Xs1.*Xs3,1000);
             [~,Is2] = min(abs(lag(round(locs*1000))-lag(Is1)));
             
-            trl_start = lag(round(locs(Is2)*1000))+1;
+            trl_start = lag(round(locs(Is2)*1000))+firstTrialLag-999;
             trl_end = trl_start+length(eyedatInterp{pairings(1,img)})-1;
         else
-            lagind1 = trl_end+round(((eyetimePyt{pairings(1,img)}(1)-2-eyetimePyt{pairings(1,img)-1}(end)))*1000);
+            lagind1 = trl_end+round(((eyetimePyt{pairings(1,img)}(1)-1-eyetimePyt{pairings(1,img)-1}(end)))*1000);
             lagind2 = trl_end+round(((eyetimePyt{pairings(1,img)}(end)+2-eyetimePyt{pairings(1,img)-1}(end)))*1000);
             [Xs1, lag] = xcorr(double(NS2.Data(eyeXind,lagind1:min([size(NS2.Data,2) lagind2]))), eyedatInterp{pairings(1,img)}(1,:));
             Xs2 = xcorr(double(NS2.Data(eyeYind,lagind1:min([size(NS2.Data,2) lagind2]))), eyedatInterp{pairings(1,img)}(2,:));

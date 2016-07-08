@@ -374,7 +374,7 @@ for fillop = 1:size(fileMat,1)
         
     end
     
-    % align data streams
+    % create UVt: pEpisode across trial
     if exist(fullfile(pEpiDir,[BlackrockNam '_NS2_picviewing_pEpiTrial_160707.mat']),'file')
         load(fullfile(pEpiDir,[BlackrockNam '_NS2_picviewing_pEpiTrial_160707.mat']))
         disp(['Loaded ' BlackrockNam '_NS2_picviewing_pEpiTrial_160707.mat'])
