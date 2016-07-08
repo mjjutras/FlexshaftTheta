@@ -12,17 +12,19 @@ fileMat = {'2014\JN_14_10_24' '14_10_24_12_23' 'JN141024001';
     '2014\JN_14_11_03' '14_11_03_14_47' 'JN141103003';
     '2014\JN_14_11_03' '14_11_03_15_50' 'JN141103005'};
 
+datDir = 'C:\Data\VR_Blackrock\';
 pEpiDir = 'R:\Buffalo Lab\Mike\VirtualNavigationProject\MATFiles\pEpisode\Flexshaft_JN2014implant';
 NSdir = 'R:\Buffalo Lab\Mike\VirtualNavigationProject\MATFiles\NSdat';
+pandaDir = 'R:\Buffalo Lab\VR Task Data UW\Giuseppe\panda data\';
 
 UVtAll = {};
 for fillop = 1:size(fileMat,1)
     
-    PandaDir = fileMat{fillop,1};
+    logDir = fileMat{fillop,1};
     calNam = fileMat{fillop,2};
     BlackrockNam = fileMat{fillop,3};
     
-    NS2 = openNSx(fullfile('C:\Data\VR_Blackrock\',[BlackrockNam '.ns2']));
+    NS2 = openNSx(fullfile(datDir,[BlackrockNam '.ns2']));
     
     chanLabels = {NS2.ElectrodesInfo.Label}';
     
@@ -80,6 +82,7 @@ for fillop = 1:size(fileMat,1)
         load(fullfile(NSdir,[BlackrockNam '_' calNam '_NS2_picviewing_NSdat.mat']))
         disp(['Loaded ' BlackrockNam '_' calNam '_NS2_picviewing_NSdat.mat'])
     else
+        
         disp('Aligning data streams using eye data')
         
         % ID saccades
@@ -130,7 +133,7 @@ for fillop = 1:size(fileMat,1)
         sacarr(:,2) = [sacdumcol2(iai,1); artifact(end,2)];
         
         % load the eye calibration file
-        fildir = ['R:\Buffalo Lab\VR Task Data UW\Giuseppe\panda data\' PandaDir];
+        fildir = fullfile(pandaDir,logDir);
         eyecal = ['eye_cal2_' calNam];
         timcal = ['time_cal2_' calNam];
         
@@ -375,9 +378,9 @@ for fillop = 1:size(fileMat,1)
     end
     
     % create UVt: pEpisode across trial
-    if exist(fullfile(pEpiDir,[BlackrockNam '_NS2_picviewing_pEpiTrial_160707.mat']),'file')
-        load(fullfile(pEpiDir,[BlackrockNam '_NS2_picviewing_pEpiTrial_160707.mat']))
-        disp(['Loaded ' BlackrockNam '_NS2_picviewing_pEpiTrial_160707.mat'])
+    if exist(fullfile(pEpiDir,[BlackrockNam '_' calNam '_NS2_picviewing_pEpiTrial_160707.mat']),'file')
+        load(fullfile(pEpiDir,[BlackrockNam '_' calNam '_NS2_picviewing_pEpiTrial_160707.mat']))
+        disp(['Loaded ' BlackrockNam '_' calNam '_NS2_picviewing_pEpiTrial_160707.mat'])
     else
 
         UVt = cell(size(UV));
@@ -397,8 +400,8 @@ for fillop = 1:size(fileMat,1)
             end
         end
         
-        save(fullfile(pEpiDir,[BlackrockNam '_NS2_picviewing_pEpiTrial_160707.mat']),'UVt')
-        disp(['Created ' BlackrockNam '_NS2_picviewing_pEpiTrial_160707.mat'])
+        save(fullfile(pEpiDir,[BlackrockNam '_' calNam '_NS2_picviewing_pEpiTrial_160707.mat']),'UVt')
+        disp(['Created ' BlackrockNam '_' calNam '_NS2_picviewing_pEpiTrial_160707.mat'])
         
     end
     
