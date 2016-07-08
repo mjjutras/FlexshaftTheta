@@ -409,7 +409,7 @@ for trllop = 1:length(eyedatPyt)
     eyedatInterp{trllop} = eye_interp;
 end
 
-%%
+%% align data streams using eyetracking data
 clear trial sampleinfo
 c = 1;
 UVt = cell(size(UV));
@@ -460,7 +460,7 @@ for img = 1:size(pairings,2)
                 if size(UVt{chnlop},3)>size(dum,2)
                     UVt{chnlop}(c,:,:) = cat(2,dum,nan(size(dum,1),size(UVt{chnlop},3)-size(dum,2)));
                 elseif size(UVt{chnlop},3)<size(dum,2)
-                    UVt{chnlop} = cat(3,UVt{chnlop},nan(size(dum,1),size(dum,2)-size(UVt{chnlop},3)));
+                    UVt{chnlop} = cat(3,UVt{chnlop},nan(size(UVt{chnlop},1),size(dum,1),size(dum,2)-size(UVt{chnlop},3)));
                     UVt{chnlop}(c,:,:) = dum;
                 end
             end
@@ -471,7 +471,7 @@ for img = 1:size(pairings,2)
     end
 end
 
-% plot eye and position data trial by trial to ensure accuracy
+% plot eye data trial by trial to ensure accuracy
 for trllop = 1:length(trial)
 
     xp = trial{trllop}(end-1,:);
