@@ -3,7 +3,7 @@ fileMat = {'2014\JN_14_10_24\JN_14_10_24_12_36' 'JN141024002';
     '2014\JN_14_10_27\JN_14_10_27_13_59' 'JN141027005';
     '2014\JN_14_10_27\JN_14_10_27_14_58' 'JN141027007';
     '2014\JN_14_10_29\JN_14_10_29_12_22' 'JN141029002';
-    '2014\JN_14_10_29\JN_14_10_29_13_27' 'JN141029004';
+    '2014\JN_14_10_29\JN_14_10_29_13_28' 'JN141029004';
     '2014\JN_14_10_30\JN_14_10_30_14_43' 'JN141030002';
     '2014\JN_14_10_30\JN_14_10_30_15_48' 'JN141030004';
     '2014\JN_14_11_03\JN_14_11_03_14_03' 'JN141103002';
@@ -109,7 +109,7 @@ for fillop = 1:size(fileMat,1)
             fprintf('Processing trial %d of %d', trllop, length(trldat.time));
             fprintf('\n')
             
-            if trllop==1
+            if c==1
                 [Xs1, lag] = xcorr(double(NS2.Data(eyeXind,:)), trldat.eyedat{trllop}(1,:));
                 Xs2 = xcorr(double(NS2.Data(eyeXind,:)), trldat.eyedat{trllop}(1,300:end));
                 Xs3 = xcorr(double(NS2.Data(eyeYind,:)), trldat.eyedat{trllop}(2,:));
@@ -132,19 +132,23 @@ for fillop = 1:size(fileMat,1)
                 trl_end = trl_start+size(trldat.eyedat{trllop},2)-1;
             end
             
-            % Save as a new file structure containing all the necessary info.
-            trial{c} = double(NS2.Data(1:end-2,trl_start:trl_end));
+            if trl_start>0 % make sure the trial started after the start of the Blackrock recording
             
-            % append the eye data from the Python log file
-            trial{c}(end+1:end+2,:) = trldat.eyedat{trllop};
-            
-            % include both Blackrock and Python analog data for now, until we
-            % decide which version has cleaner A2D conversion
-            
-            % corresponds to samples in NS2 file
-            sampleinfo(c,:) = [trl_start trl_end];
-            
-            c = c+1;
+                % Save as a new file structure containing all the necessary info.
+                trial{c} = double(NS2.Data(1:end-2,trl_start:trl_end));
+
+                % append the eye data from the Python log file
+                trial{c}(end+1:end+2,:) = trldat.eyedat{trllop};
+
+                % include both Blackrock and Python analog data for now, until we
+                % decide which version has cleaner A2D conversion
+
+                % corresponds to samples in NS2 file
+                sampleinfo(c,:) = [trl_start trl_end];
+
+                c = c+1;
+                
+            end
             
         end
         
