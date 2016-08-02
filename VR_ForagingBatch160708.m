@@ -17,7 +17,6 @@ pandaDir = 'R:\Buffalo Lab\VR Task Data UW\Giuseppe\panda data\';
 NSDir = 'R:\Buffalo Lab\Mike\VirtualNavigationProject\MATFiles\NSdat';
 pEpiDir = 'R:\Buffalo Lab\Mike\VirtualNavigationProject\MATFiles\pEpisode\Flexshaft_JN2014implant';
 
-UVtAll = {};
 for fillop = 1:size(fileMat,1)
 
     BRnam = fileMat{fillop,2};
@@ -224,12 +223,260 @@ for fillop = 1:size(fileMat,1)
         
     end
     
-    for chnlop = 1:length(UVt)
-        if fillop==1
-            UVtAll{chnlop} = UVt{chnlop}(:,:,1:50000);
-        else
-            UVtAll{chnlop} = cat(1,UVtAll{chnlop},UVt{chnlop}(:,:,1:50000));
+end
+
+%% create the UVtAll structure (unionvector, trial, all recordings)
+
+fileMat = {'2014\JN_14_10_24\JN_14_10_24_12_36' 'JN141024002';
+    '2014\JN_14_10_27\JN_14_10_27_12_56' 'JN141027003';
+    '2014\JN_14_10_27\JN_14_10_27_13_59' 'JN141027005';
+    '2014\JN_14_10_27\JN_14_10_27_14_58' 'JN141027007';
+    '2014\JN_14_10_29\JN_14_10_29_12_22' 'JN141029002';
+    '2014\JN_14_10_29\JN_14_10_29_13_28' 'JN141029004';
+    '2014\JN_14_10_30\JN_14_10_30_14_43' 'JN141030002';
+    '2014\JN_14_10_30\JN_14_10_30_15_48' 'JN141030004';
+    '2014\JN_14_11_03\JN_14_11_03_14_03' 'JN141103002';
+    '2014\JN_14_11_03\JN_14_11_03_15_02' 'JN141103004';
+    '2014\JN_14_11_03\JN_14_11_03_16_02' 'JN141103006'};
+
+homeDir = 'C:\Users\michael.jutras\Documents\MATLAB';
+datDir = 'C:\Data\VR_Blackrock\';
+trldatDir = 'R:\Buffalo Lab\Mike\VirtualNavigationProject\MATFiles\trldat';
+pandaDir = 'R:\Buffalo Lab\VR Task Data UW\Giuseppe\panda data\';
+NSDir = 'R:\Buffalo Lab\Mike\VirtualNavigationProject\MATFiles\NSdat';
+pEpiDir = 'C:\Data\MAT\pEpisode'; % copied pEpisode files to local drive
+
+UVtAll = [];
+% grow one channel at a time (otherwise takes up too much memory
+for chnlop = 1:36
+    
+    for fillop = 1:size(fileMat,1)
+
+        BRnam = fileMat{fillop,2};
+        logDir = fileMat{fillop,1};
+        [~,logNam] = fileparts(logDir);
+
+        % create UVt: pEpisode across trial
+        if exist(fullfile(pEpiDir,[BRnam '_' logNam '_NS2_foraging_pEpiTrial_160708.mat']),'file')
+
+            load(fullfile(pEpiDir,[BRnam '_' logNam '_NS2_foraging_pEpiTrial_160708.mat']))
+            disp(['Loaded ' BRnam '_' logNam '_NS2_foraging_pEpiTrial_160708.mat'])
+
+            if fillop==1
+                UVtChn = UVt{chnlop}(:,:,1:50000);
+            else
+                UVtChn = cat(1,UVtChn,UVt{chnlop}(:,:,1:50000));
+            end
+
         end
+
     end
     
+    UVtAll(chnlop,:,:) = nanmean(UVtChn,1);
+    clear UVtChn
+    
 end
+
+%% plot pEpisode
+
+freqs = (2^(1/8)).^(8:42);
+
+% Array A
+figure
+% 1
+subplot(3,4,9); imagesc(squeeze(UVtAll(1,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 1')
+% 2
+subplot(3,4,5); imagesc(squeeze(UVtAll(2,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 2')
+% 3
+subplot(3,4,1); imagesc(squeeze(UVtAll(3,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 3')
+% 4
+subplot(3,4,10); imagesc(squeeze(UVtAll(4,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 4')
+% 5
+subplot(3,4,6); imagesc(squeeze(UVtAll(5,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 5')
+% 6
+subplot(3,4,2); imagesc(squeeze(UVtAll(6,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 6')
+% 7
+subplot(3,4,11); imagesc(squeeze(UVtAll(7,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 7')
+% 8
+subplot(3,4,7); imagesc(squeeze(UVtAll(8,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 8')
+% 9
+subplot(3,4,3); imagesc(squeeze(UVtAll(9,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 9')
+% 10
+subplot(3,4,12); imagesc(squeeze(UVtAll(10,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 10')
+% 11
+subplot(3,4,8); imagesc(squeeze(UVtAll(11,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 11')
+% 12
+subplot(3,4,4); imagesc(squeeze(UVtAll(12,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 12')
+
+% run following line after maximizing figure
+suplabel('Array A','t')
+
+
+% Array B
+figure
+% 1
+subplot(3,4,9); imagesc(squeeze(UVtAll(13,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 1')
+% 2
+subplot(3,4,5); imagesc(squeeze(UVtAll(14,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 2')
+% 3
+subplot(3,4,1); imagesc(squeeze(UVtAll(15,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 3')
+% 4
+subplot(3,4,10); imagesc(squeeze(UVtAll(16,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 4')
+% 5
+subplot(3,4,6); imagesc(squeeze(UVtAll(17,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 5')
+% 6
+subplot(3,4,2); imagesc(squeeze(UVtAll(18,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 6')
+% 7
+subplot(3,4,11); imagesc(squeeze(UVtAll(19,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 7')
+% 8
+subplot(3,4,7); imagesc(squeeze(UVtAll(20,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 8')
+% 9
+subplot(3,4,3); imagesc(squeeze(UVtAll(21,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 9')
+% 10
+subplot(3,4,12); imagesc(squeeze(UVtAll(22,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 10')
+% 11
+subplot(3,4,8); imagesc(squeeze(UVtAll(23,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 11')
+% 12
+subplot(3,4,4); imagesc(squeeze(UVtAll(24,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 12')
+
+% run following line after maximizing figure
+suplabel('Array B','t')
+
+
+% Array C
+figure
+% 1
+subplot(3,4,9); imagesc(squeeze(UVtAll(25,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 1')
+% 2
+subplot(3,4,5); imagesc(squeeze(UVtAll(26,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 2')
+% 3
+subplot(3,4,1); imagesc(squeeze(UVtAll(27,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 3')
+% 4
+subplot(3,4,10); imagesc(squeeze(UVtAll(28,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 4')
+% 5
+subplot(3,4,6); imagesc(squeeze(UVtAll(29,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 5')
+% 6
+subplot(3,4,2); imagesc(squeeze(UVtAll(30,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 6')
+% 7
+subplot(3,4,11); imagesc(squeeze(UVtAll(31,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 7')
+% 8
+subplot(3,4,7); imagesc(squeeze(UVtAll(32,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 8')
+% 9
+subplot(3,4,3); imagesc(squeeze(UVtAll(33,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 9')
+% 10
+subplot(3,4,12); imagesc(squeeze(UVtAll(34,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 10')
+% 11
+subplot(3,4,8); imagesc(squeeze(UVtAll(35,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 11')
+% 12
+subplot(3,4,4); imagesc(squeeze(UVtAll(36,:,1:50000)))
+axis xy; set(gca,'YTickLabel',num2str(freqs(5:5:35)')); colormap hot
+colorbar
+title('Ch. 12')
+
+% run following line after maximizing figure
+suplabel('Array C','t')
