@@ -12,7 +12,7 @@ fileMat = {'2014\JN_14_10_24' '14_10_24_12_23' 'JN141024001';
     '2014\JN_14_11_03' '14_11_03_14_47' 'JN141103003';
     '2014\JN_14_11_03' '14_11_03_15_50' 'JN141103005'};
 
-datDir = 'C:\Data\VR_Blackrock\';
+datDir = 'C:\Data\Blackrock_VR\'; % hard drive directory containing Blackrock recording datafiles
 pEpiDir = 'R:\Buffalo Lab\Mike\VirtualNavigationProject\MATFiles\pEpisode\Flexshaft_JN2014implant';
 NSdir = 'R:\Buffalo Lab\Mike\VirtualNavigationProject\MATFiles\NSdat';
 pandaDir = 'R:\Buffalo Lab\VR Task Data UW\Giuseppe\panda data\';
@@ -20,9 +20,9 @@ pandaDir = 'R:\Buffalo Lab\VR Task Data UW\Giuseppe\panda data\';
 UVtAll = {};
 for fillop = 1:size(fileMat,1)
     
-    logDir = fileMat{fillop,1};
-    calNam = fileMat{fillop,2};
-    BlackrockNam = fileMat{fillop,3};
+    logDir = fileMat{fillop,1}; % Panda log subdirectory (within pandaDir)
+    calNam = fileMat{fillop,2}; % calibration folder name
+    BlackrockNam = fileMat{fillop,3}; % Blackrock recording filename
     
     NS2 = openNSx(fullfile(datDir,[BlackrockNam '.ns2']));
     

@@ -16,7 +16,7 @@ img_dir = 'R:\Buffalo Lab\eblab\Cortex Programs\SCM Relational Memory Project\Im
 % % load the Blackrock NS6 file
 % NS6 = openNSx('C:\Data\VR_Blackrock\JN141024001.ns6');
 % load the Blackrock NS2 file
-NS2 = openNSx('C:\Data\VR_Blackrock\JN141024001.ns2');
+NS2 = openNSx('C:\Data\Blackrock_VR\JN141024001.ns2');
 
 chanLabels = {NS2.ElectrodesInfo.Label}';
 
